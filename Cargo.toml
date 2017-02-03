@@ -1,0 +1,14 @@
+[package]
+name = "libauthz"
+version = "0.1.0"
+authors = ["Darin Gordon <dkcdkg@gmail.com>"]
+
+
+[dependencies]
+libc = "0.2.20"
+authz = "0.1.4"
+
+
+[lib]
+name = "authz"
+crate-type = ["cdylib", "rlib"]
