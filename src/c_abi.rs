@@ -32,7 +32,7 @@ pub unsafe extern "C" fn is_permitted_from_string(required_perm: *const c_char,
 
     match res {
         Ok(rc) => rc,
-        Err(_) => -1,
+        Err(_) => -2,
     }
 }
 
@@ -46,7 +46,7 @@ pub unsafe extern "C" fn is_permitted_from_json(required_perm: *const c_char,
         let ffi_required_permission = CStr::from_ptr(required_perm); // unsafe is on by default
         let required = match ffi_required_permission.to_str() {
             Ok(s) => s,
-            Err(_) => return -1,
+            Err(_) => return -3,
         };
 
         // unsafe is on by default:
@@ -56,13 +56,13 @@ pub unsafe extern "C" fn is_permitted_from_json(required_perm: *const c_char,
         let deserialized: Result<Vec<Permission>, _> = perms_from_buffer(serialized_perms);
         let assigned = match deserialized {
             Ok(x) => x,
-            Err(_) => return -1,
+            Err(_) => return -4,
         };
 
         is_permitted_from_perm(&required, assigned)
     });
     match res {
         Ok(rc) => rc,
-        Err(_) => -1,
+        Err(_) => -5,
     }
 }
