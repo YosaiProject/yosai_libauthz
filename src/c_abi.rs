@@ -56,7 +56,10 @@ pub unsafe extern "C" fn is_permitted_from_json(required_perm: *const c_char,
         let deserialized: Result<Vec<Permission>, _> = perms_from_buffer(serialized_perms);
         let assigned = match deserialized {
             Ok(x) => x,
-            Err(_) => return -4,
+            Err(e) => {
+                println!("{:?}", e);
+                return -4;
+            }
         };
 
         is_permitted_from_perm(&required, assigned)

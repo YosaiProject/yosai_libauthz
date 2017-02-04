@@ -12,7 +12,6 @@ class RustyPermissionVerifier:  # (authz_abcs.PermissionVerifier):
 
     def is_permitted_from_json(self, required_perm, serialized_perms):
         rp_keepalive = self.ffi.new("char[]", required_perm.encode('utf-8'))
-
         perms_buffer = serialized_perms.encode('utf-8')
         result = self.lib.is_permitted_from_json(rp_keepalive,
                                                  perms_buffer,

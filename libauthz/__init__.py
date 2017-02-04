@@ -1,1 +1,1 @@
-from c_abi import RustyPermissionVerifier
+from .c_abi import RustyPermissionVerifier
