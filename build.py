@@ -13,4 +13,4 @@ ffi = FFI()
 ffi.cdef(_to_source(subprocess.Popen([
     'cc', '-E', 'include/yosai_libauthz.h'],
     stdout=subprocess.PIPE).communicate()[0]))
-ffi.set_source('yosai_libauthz._libauthz_native', None)
+ffi.set_source('libauthz._libauthz_native', None)

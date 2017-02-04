@@ -8,14 +8,14 @@ try:
 except ImportError:
     bdist_wheel = None
 
-from setuptools import setup, find_packages, Command
+from setuptools import setup, find_packages
 from distutils.command.build_py import build_py
 from distutils.command.build_ext import build_ext
 from setuptools.dist import Distribution
 
 
 # Build with clang if not otherwise specified.
-if os.environ.get('YOSAI_AUTHZLIB_MANYLINUX') == '1':
+if os.environ.get('LIBAUTHZ_MANYLINUX') == '1':
     os.environ.setdefault('CC', 'gcc')
     os.environ.setdefault('CXX', 'g++')
 else:
@@ -23,7 +23,7 @@ else:
     os.environ.setdefault('CXX', 'clang++')
 
 
-PACKAGE = 'yosai_libauthz'
+PACKAGE = 'libauthz'
 EXT_EXT = sys.platform == 'darwin' and '.dylib' or '.so'
 
 
@@ -36,25 +36,10 @@ def build_libauthz(base_path):
     rv = subprocess.Popen(cmdline, cwd=here).wait()
     if rv != 0:
         sys.exit(rv)
-    src_path = os.path.join(here, 'target', 'release', 'liblibauthz' + EXT_EXT)
+    src_path = os.path.join(here, 'target', 'release',
+                            'liblibauthz' + EXT_EXT)
     if os.path.isfile(src_path):
         shutil.copy2(src_path, lib_path)
-    else:
-        print("cannot find the file: ", src_path)
-
-
-class CleanCommand(Command):
-    """Custom clean command to tidy up the project root."""
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        os.system('rm -vrf ./build ./dist ./*.pyc ./*.tgz ./*.egg-info; py.cleanup -d')
 
 
 class CustomBuildPy(build_py):
@@ -82,19 +67,18 @@ class BinaryDistribution(Distribution):
 cmdclass = {
     'build_ext': CustomBuildExt,
     'build_py': CustomBuildPy,
-    'clean': CleanCommand,
 }
 
 
 setup(
-    name='yosai_libauthz',
+    name='libauthz',
     version='0.1.0',
-    url='http://www.github.com/yosaiproject/yosai',
-    description='Authorization logic for Yosai, refactored in Rust',
-    license='Apache',
+    url='http://github.com/YosaiProject/yosai_libauthz',
+    description='Rust extensions for Yosai',
+    license='Apache License 2.0',
     author='Darin Gordon',
     author_email='dkcdkg@gmail.com',
-    packages=find_packages('.', exclude=['tests*']),
+    packages=find_packages(),
     cffi_modules=['build.py:ffi'],
     cmdclass=cmdclass,
     include_package_data=True,
@@ -107,7 +91,6 @@ setup(
         'cffi>=1.6.0'
     ],
     classifiers=[
-        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
@@ -116,7 +99,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Topic :: Security',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
-        'Topic :: Software Development :: Libraries :: Python Modules'
+        'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     ext_modules=[],
     distclass=BinaryDistribution
