@@ -10,5 +10,5 @@ authz = "0.1.4"
 
 
 [lib]
-name = "authz"
-crate-type = ["cdylib", "rlib"]
+name = "libauthz"
+crate-type = ["cdylib"]

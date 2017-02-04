@@ -28,7 +28,7 @@ EXT_EXT = sys.platform == 'darwin' and '.dylib' or '.so'
 
 
 def build_libauthz(base_path):
-    lib_path = os.path.join(base_path, '_yosai_libauthz.so')
+    lib_path = os.path.join(base_path, '_libauthz.so')
     here = os.path.abspath(os.path.dirname(__file__))
     cmdline = ['cargo', 'build', '--release']
     if not sys.stdout.isatty():
@@ -36,9 +36,11 @@ def build_libauthz(base_path):
     rv = subprocess.Popen(cmdline, cwd=here).wait()
     if rv != 0:
         sys.exit(rv)
-    src_path = os.path.join(here, 'target', 'release', 'yosai_libauthz' + EXT_EXT)
+    src_path = os.path.join(here, 'target', 'release', 'liblibauthz' + EXT_EXT)
     if os.path.isfile(src_path):
         shutil.copy2(src_path, lib_path)
+    else:
+        print("cannot find the file: ", src_path)
 
 
 class CleanCommand(Command):
