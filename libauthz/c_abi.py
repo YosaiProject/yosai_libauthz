@@ -10,18 +10,30 @@ class RustyPermissionVerifier:  # (authz_abcs.PermissionVerifier):
         self.lib = self.ffi.dlopen(os.path.join(os.path.dirname(__file__),
                                    '_libauthz.so'))
 
-    def is_permitted_from_json(self, required_perm, serialized_perms):
+    def is_permitted_from_json(self, required_perm, assigned_perms):
+        """
+        :type required_perm: string
+
+        :param assigned_perms: a json blob of assigned permission dicts
+        :type assigned_perms: bytes
+        """
         rp_keepalive = self.ffi.new("char[]", required_perm.encode('utf-8'))
-        perms_buffer = serialized_perms.encode('utf-8')
+        ap_keepalive = assigned_perms
         result = self.lib.is_permitted_from_json(rp_keepalive,
-                                                 perms_buffer,
-                                                 len(perms_buffer))
+                                                 ap_keepalive,
+                                                 len(ap_keepalive))
         if result < 0:
             msg = "Rust Library, libauthz, panicked!  Error: {}".format(result)
             raise ValueError(msg)
         return bool(result)
 
     def is_permitted_from_string(self, required_perm, assigned_perms):
+        """
+        :type required_perm: string
+
+        :param assigned_perms: a list of wildcard_perm strings
+        :type assigned_perms: list
+        """
         rp_keepalive = self.ffi.new("char[]", required_perm.encode('utf-8'))
 
         ap_keepalive = [self.ffi.new("char[]", perm.encode('utf-8')) for perm
