@@ -1,5 +1,5 @@
 [package]
-name = "libauthz"
+name = "yosai_libauthz"
 version = "0.1.0"
 authors = ["Darin Gordon <dkcdkg@gmail.com>"]
 
@@ -10,5 +10,5 @@ authz = "0.1.5"
 
 
 [lib]
-name = "libauthz"
+name = "yosai_libauthz"
 crate-type = ["cdylib"]

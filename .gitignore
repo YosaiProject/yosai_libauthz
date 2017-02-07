@@ -2,3 +2,12 @@ Cargo.lock
 .eggs/
 build/
 target/
+*.egg-info
+*.pyc
+*.swp
+*.pyo
+dist/
+build/
+__pycache__/
+.cache
+.coverage

@@ -8,7 +8,7 @@ try:
 except ImportError:
     bdist_wheel = None
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Command
 from distutils.command.build_py import build_py
 from distutils.command.build_ext import build_ext
 from setuptools.dist import Distribution
@@ -23,12 +23,29 @@ else:
     os.environ.setdefault('CXX', 'clang++')
 
 
-PACKAGE = 'libauthz'
+PACKAGE = 'yosai_libauthz'
 EXT_EXT = sys.platform == 'darwin' and '.dylib' or '.so'
 
 
-def build_libauthz(base_path):
-    lib_path = os.path.join(base_path, '_libauthz.so')
+
+class CleanCommand(Command):
+    """Custom clean command to tidy up the project root."""
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        os.system('rm -vrf ./build ./dist ./*.pyc ./*.tgz ./*.egg-info ./target; py.cleanup -d')
+
+
+
+
+def build_yosai_libauthz(base_path):
+    lib_path = os.path.join(base_path, '_yosai_libauthz.so')
     here = os.path.abspath(os.path.dirname(__file__))
     cmdline = ['cargo', 'build', '--release']
     if not sys.stdout.isatty():
@@ -37,7 +54,7 @@ def build_libauthz(base_path):
     if rv != 0:
         sys.exit(rv)
     src_path = os.path.join(here, 'target', 'release',
-                            'liblibauthz' + EXT_EXT)
+                            'libyosai_libauthz' + EXT_EXT)
     if os.path.isfile(src_path):
         shutil.copy2(src_path, lib_path)
 
@@ -45,7 +62,7 @@ def build_libauthz(base_path):
 class CustomBuildPy(build_py):
     def run(self):
         build_py.run(self)
-        build_libauthz(os.path.join(self.build_lib, *PACKAGE.split('.')))
+        build_yosai_libauthz(os.path.join(self.build_lib, *PACKAGE.split('.')))
 
 
 class CustomBuildExt(build_ext):
@@ -53,7 +70,7 @@ class CustomBuildExt(build_ext):
         build_ext.run(self)
         if self.inplace:
             build_py = self.get_finalized_command('build_py')
-            build_libauthz(build_py.get_package_dir(PACKAGE))
+            build_yosai_libauthz(build_py.get_package_dir(PACKAGE))
 
 
 class BinaryDistribution(Distribution):
@@ -67,13 +84,14 @@ class BinaryDistribution(Distribution):
 cmdclass = {
     'build_ext': CustomBuildExt,
     'build_py': CustomBuildPy,
+    'clean': CleanCommand,
 }
 
 
 setup(
-    name='libauthz',
+    name='yosai_libauthz',
     version='0.1.0',
-    url='http://github.com/YosaiProject/yosai_libauthz',
+    url='http://github.com/YosaiProject/yosai_yosai_libauthz',
     description='Rust extensions for Yosai',
     license='Apache License 2.0',
     author='Darin Gordon',

@@ -1,14 +1,14 @@
 import os
 from yosai.core import authz_abcs
 
-from ._libauthz_native import ffi
+from ._yosai_libauthz_native import ffi
 
 
 class RustyPermissionVerifier:  # (authz_abcs.PermissionVerifier):
     def __init__(self):
         self.ffi = ffi
         self.lib = self.ffi.dlopen(os.path.join(os.path.dirname(__file__),
-                                   '_libauthz.so'))
+                                   '_yosai_libauthz.so'))
 
     def is_permitted_from_json(self, required_perm, assigned_perms):
         """
@@ -18,13 +18,13 @@ class RustyPermissionVerifier:  # (authz_abcs.PermissionVerifier):
         :type assigned_perms: bytes
         """
         rp_keepalive = self.ffi.new("char[]", required_perm.encode('utf-8'))
-        ap_keepalive = assigned_perms
         result = self.lib.is_permitted_from_json(rp_keepalive,
-                                                 ap_keepalive,
-                                                 len(ap_keepalive))
+                                                 assigned_perms,
+                                                 len(assigned_perms))
         if result < 0:
-            msg = "Rust Library, libauthz, panicked!  Error: {}".format(result)
+            msg = "Rust Library, yosai_libauthz, panicked!  Error: {}".format(result)
             raise ValueError(msg)
+
         return bool(result)
 
     def is_permitted_from_string(self, required_perm, assigned_perms):
@@ -45,6 +45,6 @@ class RustyPermissionVerifier:  # (authz_abcs.PermissionVerifier):
                                                    len(assigned_permissions))
 
         if result < 0:
-            msg = "Rust Library, libauthz, panicked! Error: {}".format(result)
+            msg = "Rust Library, yosai_libauthz, panicked! Error: {}".format(result)
             raise ValueError(msg)
         return bool(result)
